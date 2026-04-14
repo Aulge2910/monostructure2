@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { parseError, registerSchema, type RegisterInputs } from "@repo/shared";
 import { useForm } from "react-hook-form";
-import { registerSchema, type RegisterInputs } from "@repo/shared";
-import { parseError } from "@repo/shared";
+
 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 export const useRegister = () => {
   const {
@@ -16,6 +16,9 @@ export const useRegister = () => {
   });
 
   const onSubmit = async (data: RegisterInputs) => {
+    console.log(data)
+    console.log("DEBUG: process.env VALUE ->", process.env.NEXT_PUBLIC_API_URL);
+    console.log("DEBUG: baseUrl VALUE ->", baseUrl);
     try {
       const response = await fetch(`${baseUrl}/register`, {
         method: "POST",
@@ -33,8 +36,8 @@ export const useRegister = () => {
 
       const result = await response.json();
       alert("register success");
+      console.log(result)
       reset();
- 
     } catch (error) {
       console.error("error submitting:", error);
     }

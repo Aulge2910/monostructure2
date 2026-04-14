@@ -3,6 +3,7 @@
 import { useRegister } from "@/app/hooks/useRegister";
 
 const Hero = () => {
+ 
   const { handleSubmit, register, errors, isSubmitting } = useRegister();
   return (
     <section className="w-full max-w-380 min-h-screen">
