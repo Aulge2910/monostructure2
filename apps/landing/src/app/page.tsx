@@ -1,7 +1,9 @@
-import Image from "next/image";
-import Hero from "./sections/hero";
+import { ScrambleText } from "@repo/shared";
 export default function Home() {
-  return <div className="w-full">
-    <Hero/>
-  </div>;
+  return (
+    <div className="w-full">
+      {/* <Hero/> */}
+      <ScrambleText />
+    </div>
+  );
 }

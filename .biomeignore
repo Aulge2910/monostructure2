@@ -3,3 +3,5 @@ dist/
 .next/
 .turbo/
 build/
+
+**/*.css
