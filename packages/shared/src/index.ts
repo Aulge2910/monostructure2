@@ -1,4 +1,6 @@
-// export * from './utils/format';
-export const hello = "这是我的第一个共享模块";
+ 
+export const hello = "first module";
 export * from "./animations";
 export * from "./layout"; 
+export * from "./schemas";
+// export * from "./components";

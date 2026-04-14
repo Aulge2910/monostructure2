@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import {
   registerSchema,
   type RegisterInputs,
-} from "@repo/shared/schemas/register";
+} from "@repo/shared";
 
 export const useRegister = () => {
   const {
