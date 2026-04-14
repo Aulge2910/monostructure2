@@ -15,7 +15,7 @@ importers:
   apps/landing:
     dependencies:
       '@hookform/resolvers':
-        specifier: ^5.2.2
+        specifier: 5.2.2
         version: 5.2.2(react-hook-form@7.72.1(react@19.2.3))
       '@repo/shared':
         specifier: workspace:*
@@ -30,58 +30,64 @@ importers:
         specifier: 19.2.3
         version: 19.2.3(react@19.2.3)
       react-hook-form:
-        specifier: ^7.72.1
+        specifier: 7.72.1
         version: 7.72.1(react@19.2.3)
       zod:
-        specifier: ^4.3.6
+        specifier: 4.3.6
         version: 4.3.6
     devDependencies:
       '@tailwindcss/postcss':
-        specifier: ^4
+        specifier: '4'
         version: 4.2.2
       '@types/node':
-        specifier: ^20
+        specifier: '20'
         version: 20.19.37
       '@types/react':
-        specifier: ^19
+        specifier: '19'
         version: 19.2.14
       '@types/react-dom':
-        specifier: ^19
+        specifier: '19'
         version: 19.2.3(@types/react@19.2.14)
       babel-plugin-react-compiler:
         specifier: 1.0.0
         version: 1.0.0
       tailwindcss:
-        specifier: ^4
+        specifier: '4'
         version: 4.2.2
       typescript:
-        specifier: ^5
+        specifier: '5'
         version: 5.9.3
 
   packages/shared:
     dependencies:
       '@gsap/react':
-        specifier: ^2.1.2
+        specifier: 2.1.2
         version: 2.1.2(gsap@3.15.0)(react@19.2.3)
+      '@hookform/resolvers':
+        specifier: 5.2.2
+        version: 5.2.2(react-hook-form@7.72.1(react@19.2.3))
       gsap:
-        specifier: ^3.15.0
+        specifier: 3.15.0
         version: 3.15.0
+      react-hook-form:
+        specifier: 7.72.1
+        version: 7.72.1(react@19.2.3)
       zod:
-        specifier: ^4.3.6
+        specifier: 4.3.6
         version: 4.3.6
     devDependencies:
       '@types/react':
-        specifier: ^19.2.14
+        specifier: '19'
         version: 19.2.14
+      '@types/react-dom':
+        specifier: '19'
+        version: 19.2.3(@types/react@19.2.14)
       react:
         specifier: 19.2.3
         version: 19.2.3
-
-  packages/shared/src:
-    dependencies:
-      zod:
-        specifier: ^4.3.6
-        version: 4.3.6
+      react-dom:
+        specifier: 19.2.3
+        version: 19.2.3(react@19.2.3)
 
 packages:
 
