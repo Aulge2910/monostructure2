@@ -6,7 +6,7 @@ const Hero = () => {
  
   const { handleSubmit, register, errors, isSubmitting } = useRegister();
   return (
-    <section className="w-full max-w-380 min-h-screen">
+    <section className="w-full max-w-380 min-h-screen bg-green-300">
       <div className="header w-full h-30 flex items-center justify-center">
         <div className="w-full flex items-center justify-center">
           <span>Brand</span>
