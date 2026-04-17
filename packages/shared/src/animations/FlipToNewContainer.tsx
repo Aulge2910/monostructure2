@@ -29,17 +29,19 @@ export const FlipToNewContainer = () => {
         clearProps: "all",
         // fade:true, 用在swap item 比较适合
         ease: "power1.inOut",
-        scale: true,   //通常需要放，自动调整 flip后的size
+        // 假设你想保护 box 里的文字不被拉伸
+        // fitChild: ".text-element", 比如有image在内容的时候
+        scale: true, //通常需要放，自动调整 flip后的size
         // simple:true, 当只有简单的位移， 可以用这个， 适合用在很多box的时候（极少用到）
         spin: true, //可以写函数
-    //      spin: (index, target) => {
-    // if (target.classList.contains("clockwise")) {
-    //   return 1;
-    // } else if (target.classList.contains("counter-clockwise")) {
-    //   return -1;
-    // } else {
-    //   return 0;
-    // }
+        //      spin: (index, target) => {
+        // if (target.classList.contains("clockwise")) {
+        //   return 1;
+        // } else if (target.classList.contains("counter-clockwise")) {
+        //   return -1;
+        // } else {
+        //   return 0;
+        // }
         stagger: 0.4,
         // nested: true ， 如果有子元素在一起，可以用这个，优化nested偏移
         // toggleClass: your-class , 用这个可以丝滑切换css， better dont use in react
