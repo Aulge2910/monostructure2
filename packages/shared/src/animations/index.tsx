@@ -5,3 +5,6 @@ export { useGSAP } from "@gsap/react";
 export {TextReplace} from "./TextReplace";
 export { FlipToNewContainer } from "./FlipToNewContainer";
 export {DraggableItem} from "./DraggableItem"
+export {PhysicsEffect}from "./PhysicsEffect"
+export {MotionPath} from "./MotionPath"
+export {MorphSvg} from "./MorphSvg"
