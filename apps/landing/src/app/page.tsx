@@ -7,20 +7,24 @@ import {PhysicsEffect} from "@repo/shared"
 import { MotionPath } from "@repo/shared";
 import { MorphSvg } from "@repo/shared";
 import HeroScene from "./components/HeroScene";
+import {SplitTextResponsive} from "@repo/shared"
+import { ElasticSplitTextResponsive } from "@repo/shared";
 export default function Home() {
   return (
     <div className="w-full">
+      <ElasticSplitTextResponsive text="Hi, I'm Amy, Web Developer" />
       {/* <Hero/>
       <ScrambleText />
-      <TextReplace/> */}
+      <TextReplace/>
       <MorphSvg/>
       <MotionPath/>
       <PhysicsEffect/>
       <HeroScene/>
-       {/* <DraggableItem/> */}
-         {/* <FlipToNewContainer/> */}
- 
+      <div className="relative">
+         <DraggableItem/>
+      </div>
      
+      <FlipToNewContainer/> */}
     </div>
   );
 }

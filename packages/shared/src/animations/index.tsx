@@ -1,10 +1,11 @@
-export { SplitTextResponsive } from "./SplitTextResponsive";
-export { ScrambleText } from "./SrambleText";
-export { gsap } from "gsap";
 export { useGSAP } from "@gsap/react";
-export {TextReplace} from "./TextReplace";
+export { gsap } from "gsap";
+export { DraggableItem } from "./DraggableItem";
 export { FlipToNewContainer } from "./FlipToNewContainer";
-export {DraggableItem} from "./DraggableItem"
-export {PhysicsEffect}from "./PhysicsEffect"
-export {MotionPath} from "./MotionPath"
-export {MorphSvg} from "./MorphSvg"
+export { MorphSvg } from "./MorphSvg";
+export { MotionPath } from "./MotionPath";
+export { PhysicsEffect } from "./PhysicsEffect";
+export { SplitTextResponsive } from "./SplitTextResponsive";
+export { ElasticSplitTextResponsive } from "./ElasticSplitTextResponsive";
+export { ScrambleText } from "./SrambleText";
+export { TextReplace } from "./TextReplace";
