@@ -105,14 +105,14 @@ export const Menu = ({ seats, setSeats }: MenuProps) => {
         <h1>Select Your Seats Option</h1>
       </div>
       {/* select pax */}
-      <div className="flex flex-wrap">
+      <div className="flex flex-col items-center justify-center">
         {rows.map((row, index) => (
           <div
             key={row.id}
-            className="flex gap-4 items-end animate-in fade-in slide-in-from-left-2 w-full"
+            className="flex gap-4 w-full items-center justify-center"
           >
             {/* Pax Select */}
-            <div className="flex flex-col  w-full">
+            <div className="flex flex-col shrink-0 flex-1">
               <label
                 htmlFor={`select_pax-${row.id}`}
                 className="text-[10px] font-bold text-gray-400 uppercase"
@@ -131,7 +131,7 @@ export const Menu = ({ seats, setSeats }: MenuProps) => {
                   const isOccupied = selectedPaxes.includes(p) && p !== row.pax;
                   return (
                     <option key={p} value={p} disabled={isOccupied}>
-                      {p} Pax {isOccupied ? "(Selected)" : ""}
+                      {p} Pax {isOccupied ? "" : ""}
                     </option>
                   );
                 })}
@@ -139,7 +139,7 @@ export const Menu = ({ seats, setSeats }: MenuProps) => {
             </div>
 
             {/* Quantity Input */}
-            <div className="flex flex-col w-full">
+            <div className="flex flex-col shrink-0 flex-1">
               <label
                 htmlFor={`quantity_input-${row.id}`}
                 className="text-[10px] font-bold text-gray-400 uppercase w-full"
@@ -159,15 +159,16 @@ export const Menu = ({ seats, setSeats }: MenuProps) => {
             </div>
 
             {/* delete button */}
-            {rows.length > 1 && (
+            
               <button
                 type="button"
                 onClick={() => setRows(rows.filter((_, i) => i !== index))}
+                disabled={rows.length === 1}
                 className="h-14 p-4 text-gray-400 hover:text-red-500"
               >
                 ✕
               </button>
-            )}
+        
           </div>
         ))}
 

@@ -14,7 +14,7 @@ import { Floorplan } from "@repo/shared";
 
 export default function Home() {
   return (
-    <div className="w-full h-screen">
+    <div className="w-full min-h-screen">
       <Floorplan/>
       {/* <Cursor/> */}
       {/* <ElasticSplitTextResponsive text="Hi, I'm Amy, Web Developer" /> */}
