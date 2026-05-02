@@ -98,14 +98,15 @@ export const Menu = ({ seats, setSeats }: MenuProps) => {
   };
 
   return (
-    <div className="w-full p-4 border">
-      <h1>Floor Plan Editor Menu</h1>
+    <div className="w-full p-4 border rounded-xl border-gray-100 shadow-lg flex flex-col gap-4 items-center">
+      <h1 className="text-center font-bold text-xl">Floor Plan Editor Menu</h1>
+      <div className="border border-gray-100 w-3/4" />
 
       <div className="flex w-full">
         <h1>Select Your Seats Option</h1>
       </div>
       {/* select pax */}
-      <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center gap-2">
         {rows.map((row, index) => (
           <div
             key={row.id}
@@ -159,61 +160,60 @@ export const Menu = ({ seats, setSeats }: MenuProps) => {
             </div>
 
             {/* delete button */}
-            
-              <button
-                type="button"
-                onClick={() => setRows(rows.filter((_, i) => i !== index))}
-                disabled={rows.length === 1}
-                className="h-14 p-4 text-gray-400 hover:text-red-500"
-              >
-                ✕
-              </button>
-        
+
+            <button
+              type="button"
+              onClick={() => setRows(rows.filter((_, i) => i !== index))}
+              disabled={rows.length === 1}
+              className="h-14 p-4 text-gray-400 hover:text-red-500"
+            >
+              ✕
+            </button>
           </div>
         ))}
+      </div>
+      {/* button */}
+      <div className="flex w-full gap-1 flex-wrap my-4">
+        <div className="flex w-full gap-2  ">
+          <button
+            type="button"
+            onClick={addMore}
+            disabled={rows.length >= paxOptions.length}
+            className="border w-1/2 p-4 text-sm rounded-lg font-bold text-[#297aad] hover:text-[#66a0c4] disabled:text-gray-300"
+          >
+            + Add More
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setSeats([]);
+              setRows([{ id: "initial-row", pax: 2, quantity: 1 }]);
+            }}
+            disabled={seats.length === 0}
+            className="border w-1/2 p-4 text-sm rounded-lg font-bold text-[#297aad] hover:text-[#66a0c4] disabled:text-gray-300"
+          >
+            Clear
+          </button>
+        </div>
 
-        <div className="flex w-full gap-1 flex-wrap p-4 ">
-          <div className="flex w-full gap-2">
-            <button
-              type="button"
-              onClick={addMore}
-              disabled={rows.length >= paxOptions.length}
-              className="w-1/2 p-4 text-sm rounded-lg font-bold text-[#297aad] hover:text-[#66a0c4] disabled:text-gray-300"
-            >
-              + Add More
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setSeats([]);
-                setRows([{ id: "initial-row", pax: 2, quantity: 1 }]);
-              }}
-              disabled={seats.length === 0}
-              className="w-1/2 p-4 text-sm rounded-lg font-bold text-[#297aad] hover:text-[#66a0c4] disabled:text-gray-300"
-            >
-              Clear
-            </button>
-          </div>
-
-          <div className="flex w-full gap-2">
-            <button
-              type="button"
-              onClick={UpdateSeatAmount}
-              className="w-1/2 p-4 bg-[#5f64aa] text-white rounded-lg hover:bg-[#777fef] ml-auto"
-            >
-              Update
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                const newSeats = generateSeat(rows);
-                setSeats((prev) => [...prev, ...newSeats]);
-              }}
-              className="w-1/2 p-4 bg-[#5f64aa] text-white rounded-lg hover:bg-[#777fef] ml-auto"
-            >
-              Save
-            </button>
-          </div>
+        <div className="flex w-full gap-2">
+          <button
+            type="button"
+            onClick={UpdateSeatAmount}
+            className="border w-1/2 p-4 bg-[#5f64aa] text-white rounded-lg hover:bg-[#777fef] ml-auto"
+          >
+            Update
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const newSeats = generateSeat(rows);
+              setSeats((prev) => [...prev, ...newSeats]);
+            }}
+            className="border w-1/2 p-4 bg-[#5f64aa] text-white rounded-lg hover:bg-[#777fef] ml-auto"
+          >
+            Save
+          </button>
         </div>
       </div>
     </div>

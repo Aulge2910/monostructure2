@@ -5,9 +5,9 @@ import { Menu } from "./Menu";
 export const Floorplan = () => {
   const { seats,setSeats } = useSeats();
   return (
-    <div className="w-full p-4 border flex">
+    <div className="w-full min-h-screen p-4 border flex flex-wrap">
+      <h1 className="block w-full p-4 font-bold text-xl">Floor Plan Editor</h1>
       <div className="w-[70%] p-4">
-        <h1 className="text-2xl font-bold">Floorplan Editor</h1>
         <Canvas>
         
             {seats.map((seat) => (
@@ -16,7 +16,7 @@ export const Floorplan = () => {
  
         </Canvas>
       </div>
-      <div className="w-[30%] h-screen">
+      <div className="w-[30%] p-4">
         <Menu seats={seats} setSeats={setSeats}/>
       </div>
     </div>
