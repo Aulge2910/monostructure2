@@ -110,7 +110,7 @@ export const SeatItem = ({
         backgroundColor: colors.bg,
         borderLeftColor: colors.border,
       }}
-      className={`rounded-lg overflow-hidden border-l-4`}
+      className={`rounded-lg overflow-hidden border-l-6`}
     >
       {/* Table Body Content */}
       <div className=" flex flex-col overflow-hidden shadow-sm h-full w-full">

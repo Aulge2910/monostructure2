@@ -10,39 +10,43 @@ import {
 
 type THEME = "GREEN" | "BLUE" | "RED" | "PANTONE" | "BLACK" | "WHITE";
 
-const themeColorMap: Record<
-  THEME,
-  { theme: string; color: string; line: string }
-> = {
+export interface ThemeConfig {
+  theme: THEME;
+  color: string;
+  line: string;
+}
+
+
+const themeColorMap: Record<THEME, ThemeConfig> = {
   BLACK: {
     theme: "BLACK",
     color: "#000000",
-    line: "",
+    line: "#FFFFFF",
   },
   WHITE: {
     theme: "WHITE",
     color: "#FFFFFF",
-    line: "",
+    line: "#000000",
   },
   GREEN: {
     theme: "GREEN",
-    color: "#96C24E",
-    line: "",
+    color: "#0D4F1F",
+    line: "#FFFFFF",
   },
   BLUE: {
     theme: "BLUE",
     color: "#4A4B9D",
-    line: "",
+    line: "#E9E7F6",
   },
   RED: {
     theme: "RED",
     color: "#A81E32",
-    line: "",
+    line: "#C5B4B8",
   },
   PANTONE: {
     theme: "PANTONE",
     color: "#BB7A8C",
-    line: "",
+    line: "#E99D96",
   },
 };
 
@@ -50,7 +54,7 @@ interface MenuProps {
   seats: SeatComponents[];
   setSeats: React.Dispatch<React.SetStateAction<SeatComponents[]>>;
   updateLayout: (configs: PaxRow[]) => void;
-  setActiveTheme: (config: { theme: string; color: string }) => void;
+  setActiveTheme: (config: ThemeConfig) => void;
 }
 
 export const Menu = ({ seats, setSeats, updateLayout, setActiveTheme }: MenuProps) => {
@@ -86,7 +90,8 @@ export const Menu = ({ seats, setSeats, updateLayout, setActiveTheme }: MenuProp
       <div className="border border-gray-100 w-3/4" />
 
       <div className="flex w-full flex-wrap gap-2">
-        <p className="block">Seats Option</p> {/* select pax */}
+        <p className="block text-center w-full font-bold">Seats Option</p>{" "}
+        {/* select pax */}
         <div className="flex flex-col items-center justify-center gap-2 w-full">
           {rows.map((row, index) => (
             <div
@@ -95,12 +100,6 @@ export const Menu = ({ seats, setSeats, updateLayout, setActiveTheme }: MenuProp
             >
               {/* Pax Select */}
               <div className="flex flex-col shrink-0 flex-1 w-full">
-                <label
-                  htmlFor={`select_pax-${row.pax}`}
-                  className="text-[10px] font-bold text-gray-400 uppercase"
-                >
-                  Seat Pax
-                </label>
                 <select
                   id="select_pax"
                   value={row.pax}
@@ -123,12 +122,6 @@ export const Menu = ({ seats, setSeats, updateLayout, setActiveTheme }: MenuProp
 
               {/* Quantity Input */}
               <div className="flex flex-col shrink-0 flex-1">
-                <label
-                  htmlFor={`quantity_input-${row.pax}`}
-                  className="text-[10px] font-bold text-gray-400 uppercase w-full"
-                >
-                  Quantity
-                </label>
                 <input
                   id="quantity_input"
                   type="number"
@@ -157,18 +150,27 @@ export const Menu = ({ seats, setSeats, updateLayout, setActiveTheme }: MenuProp
       </div>
 
       <div className="flex w-full flex-wrap gap-2">
-        <p className="block w-full">Theme</p>
-        <div className="grid grid-cols-2 gap-2 p-4 w-full items-center justify-center text-white [&_button]:border [&_button]:shadow-md">
+        <p className="block text-center w-full font-bold">Theme</p>
+        <div className="grid grid-cols-6 gap-2 p-4 w-full items-center justify-center text-white [&_button]:border [&_button]:shadow-md">
           {(Object.keys(themeColorMap) as THEME[]).map((theme) => (
             <button
               key={theme}
               type="button"
-              className="p-2 rounded-md text-white font-bold transition-all "
-              style={{ backgroundColor: themeColorMap[theme].color }}
+              className={`min-h-12 max-w-12 p-4 rounded-md font-bold transition-all ${
+                theme === "WHITE" ? "text-black" : "text-white"
+              }`}
+              style={{
+                backgroundImage: `
+          linear-gradient(to right, ${themeColorMap[theme].line} 1px, transparent 1px),
+          linear-gradient(to bottom, ${themeColorMap[theme].line} 1px, transparent 1px)
+        `,
+                backgroundSize: `${15}px ${15}px`,
+                backgroundColor: themeColorMap[theme].color,
+              }}
               onClick={() => getCurrentTheme(theme)}
-            >
-              {theme}
-            </button>
+            />
+           
+            
           ))}
         </div>
       </div>
