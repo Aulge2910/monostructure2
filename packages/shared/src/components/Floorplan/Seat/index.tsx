@@ -1,29 +1,32 @@
 "use client";
 
 import { nanoid } from "nanoid";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export type Pax = 2 | 4 | 6 | 8 | 10 | 12;
 export type SeatStatus = "available" | "occupied" | "unavailable" | "reserved";
 export type PaxRow = {
-  id: string;
   pax: Pax;
   quantity: number;
 };
 
+export const SEAT_CONFIG = {
+  CHAIR_WIDTH: 40,
+  CHAIR_HEIGHT: 24,
+  CHAIR_GAP: 8,
+  CHAIR_PADDING: 10,
+  BASE_TABLE_WIDTH: 50,
+};
+
 export const getSeatDimensions = (pax: number) => {
-  const CHAIR_WIDTH = 40;
-  const CHAIR_GAP = 8;
-  const PADDING = 10;
-  const BASE_TABLE_WIDTH = 50;
-
+  const { CHAIR_WIDTH, CHAIR_GAP, CHAIR_PADDING, BASE_TABLE_WIDTH } =
+    SEAT_CONFIG;
   const chairsCount = pax / 2;
-  const width =
+  const seat_width =
     BASE_TABLE_WIDTH +
-    (chairsCount * CHAIR_WIDTH + (chairsCount - 1) * CHAIR_GAP + PADDING);
-  const height = 140;
-
-  return { width, height };
+    (chairsCount * CHAIR_WIDTH + (chairsCount - 1) * CHAIR_GAP + CHAIR_PADDING);
+  const seat_height = 100;
+  return { seat_width, seat_height };
 };
 
 export interface SeatComponents extends SeatMetadata {
@@ -56,8 +59,8 @@ const statusColorMap: Record<SeatStatus, { bg: string; border: string }> = {
 interface SeatMetadata {
   x: number;
   y: number;
-  width: number;
-  height: number;
+  seat_width: number;
+  seat_height: number;
   rotation?: number;
   lastupdated?: string;
 }
@@ -69,7 +72,8 @@ export const SeatItem = ({
   pax,
   x,
   y,
-  width,
+  seat_width,
+  seat_height,
 }: SeatComponents) => {
   // seat variable
   const colors = statusColorMap[status] || statusColorMap.available;
@@ -78,20 +82,22 @@ export const SeatItem = ({
   // generate chairs pax with id
   const upperChairs = Array.from(
     { length: chairsCount },
-    (_, i) => `seat-${id}-top-${i}`,
+    (_, i) => `chair-${id}-top-${i}`,
   );
   const lowerChairs = Array.from(
     { length: chairsCount },
-    (_, i) => `seat-${id}-bottom-${i}`,
+    (_, i) => `chair-${id}-bottom-${i}`,
   );
 
   // chair ui
   const Chair = ({ position }: { position: "top" | "bottom" }) => (
     <div
-      style={{ backgroundColor: colors.bg }}
-      className={`w-10 h-6  ${
-        position === "top" ? "rounded-t-xl" : `rounded-b-xl`
-      }`}
+      style={{
+        backgroundColor: colors.bg,
+        width: SEAT_CONFIG.CHAIR_WIDTH,
+        height: SEAT_CONFIG.CHAIR_HEIGHT,
+      }}
+      className={`   ${position === "top" ? "rounded-t-xl" : `rounded-b-xl`}`}
     />
   );
 
@@ -99,38 +105,42 @@ export const SeatItem = ({
   const Table = () => (
     <div
       style={{
-        width: `${width}px`,
+        width: `${seat_width}px`,
+        height: `${seat_height}px`,
         backgroundColor: colors.bg,
         borderLeftColor: colors.border,
       }}
-      className={`transition-all duration-300 border-l-6 rounded-lg   overflow-hidden shadow-sm`}
+      className={`rounded-lg overflow-hidden border-l-4`}
     >
-      {/* ID */}
-      <div
-        style={{ backgroundColor: colors.bg, width: "100%" }}
-        className="h-8 text-xs text-gray-100 flex items-center px-3 truncate  "
-      >
-        {id}
-      </div>
-      {/* Label */}
-      <div
-        style={{ backgroundColor: colors.bg }}
-        className={`h-10 flex px-3 items-center text-white font-bold text-lg truncate`}
-      >
-        {label}
+      {/* Table Body Content */}
+      <div className=" flex flex-col overflow-hidden shadow-sm h-full w-full">
+        {/* ID */}
+        <div
+          style={{ backgroundColor: colors.bg, width: "100%" }}
+          className="border-b border-b-white text-xs text-gray-100 flex items-center p-2 truncate h-full max-h-1/4 "
+        >
+          {id}
+        </div>
+        {/* Label */}
+        <div
+          style={{ backgroundColor: colors.bg, width: "100%" }}
+          className={` flex items-center text-white font-bold text-lg truncate p-2 h-full`}
+        >
+          {label}
+        </div>
       </div>
     </div>
   );
 
   // seat ui
-  // seat ui
   return (
+    // seat wrapper div // outer most part
     <div
-      className="absolute flex flex-col items-center gap-1 group" // 1. 改为 absolute
+      className="absolute flex flex-col items-center gap-1 group"
       style={{
-        left: `${x}px`, // 2. 绑定生成的 x
-        top: `${y}px`, // 3. 绑定生成的 y
-        width: `${width}px`, // 4. 绑定生成的 width
+        left: `${x}px`,
+        top: `${y}px`,
+        width: `${seat_width}px`,
       }}
     >
       {/* upper chair */}
@@ -151,49 +161,56 @@ export const SeatItem = ({
       </div>
     </div>
   );
-};;
+};
 
 // generate seat
 export const generateSeat = (configs: PaxRow[], startX = 60, startY = 60) => {
   const seats: SeatComponents[] = [];
-  const GAP = 20;
-  let currentX = startX; // 不再写死 60，而是使用传入的值
+  const GAP = 20; // distance between seats
+  let currentX = startX;
   let currentY = startY;
 
   configs.forEach((config) => {
     for (let i = 0; i < config.quantity; i++) {
-      const { width, height } = getSeatDimensions(config.pax);
-      const letter = String.fromCharCode(65 + i);
+      const { seat_width, seat_height } = getSeatDimensions(config.pax);
+      if (currentX + seat_width > 800) {
+        currentX = 60;
+        const total_seat_height =
+          seat_height + SEAT_CONFIG.CHAIR_HEIGHT * 2 + 8;
+        currentY += total_seat_height + GAP;
+      }
 
+      const letter = String.fromCharCode(65 + i);
+      const seatId = nanoid(6);
       seats.push({
-        id: nanoid(6),
+        id: seatId,
         pax: config.pax,
         type: "square",
         status: "available",
-        width,
-        height,
+        seat_width,
+        seat_height,
         label: `${config.pax}Pax-${letter}`,
         x: currentX,
         y: currentY,
       });
-
-      currentX += width + GAP;
-      if (currentX > 800) {
-        currentX = 60;
-        currentY += height + GAP;
-      }
+      currentX += seat_width + GAP;
     }
   });
 
-  return seats;
+  return { seats };
 };
 export const useSeats = () => {
   const [seats, setSeats] = useState<SeatComponents[]>([]);
-
-  useEffect(() => {
-    const initialData = generateSeat([]);
-    setSeats(initialData);
+  const updateLayout = useCallback((configs: PaxRow[]) => {
+    const { seats: newSeats } = generateSeat(configs);
+    setSeats(newSeats);
   }, []);
 
-  return { seats, setSeats };
+  useEffect(() => {
+    const { seats: initialSeats } = generateSeat([]);
+    setSeats(initialSeats);
+    updateLayout([]);
+  }, [updateLayout]);
+
+  return { seats, setSeats, updateLayout };
 };

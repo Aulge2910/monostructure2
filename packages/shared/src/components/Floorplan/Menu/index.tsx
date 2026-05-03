@@ -6,96 +6,40 @@ import {
   getSeatDimensions,
   type Pax,
   type PaxRow,
-  type SeatComponents,
+  type SeatComponents
 } from "../Seat";
 
 interface MenuProps {
   seats: SeatComponents[];
   setSeats: React.Dispatch<React.SetStateAction<SeatComponents[]>>;
+  updateLayout: (configs: PaxRow[]) => void;
 }
 
-export const Menu = ({ seats, setSeats }: MenuProps) => {
+export const Menu = ({ seats, setSeats, updateLayout }: MenuProps) => {
   const paxOptions: Pax[] = [2, 4, 6, 8, 10, 12];
   const [rows, setRows] = useState<PaxRow[]>([
-    { id: "initial-row", pax: 2, quantity: 1 },
+    { pax: 2, quantity: 1 },
   ]);
 
-  const updateRow = (index: number, field: keyof PaxRow, value: number) => {
-    const newRows = [...rows];
-    newRows[index] = { ...newRows[index], [field]: value };
-    setRows(newRows);
-  };
-
+const updateRow = (targetPax: number, field: keyof PaxRow, value: number) => {
+  setRows((prevRows) =>
+    prevRows.map((row) =>
+      row.pax === targetPax ? { ...row, [field]: value } : row,
+    ),
+  );
+};
   // get all the selected paxes
   const selectedPaxes = rows.map((r) => r.pax);
 
   // add new rows of paxes
-  const addMore = () => {
+  const addNewSeatPaxInput = () => {
     const nextAvailable = paxOptions.find((p) => !selectedPaxes.includes(p));
     if (nextAvailable) {
-      setRows([...rows, { id: nanoid(), pax: nextAvailable, quantity: 1 }]);
+      setRows([...rows, { pax: nextAvailable, quantity: 1 }]);
     }
   };
 
-  const UpdateSeatAmount = () => {
-    setSeats((currentSeats) => {
-      let updatedSeats = [...currentSeats];
-      const GAP = 20;
-
-      // 我们只需要依赖现有的座位来进行循环生成即可，每次顺延最后一个
-      rows.forEach((row) => {
-        const existingOfPax = updatedSeats.filter((s) => s.pax === row.pax);
-        const currentCount = existingOfPax.length;
-        const targetCount = row.quantity;
-
-        if (currentCount < targetCount) {
-          const diff = targetCount - currentCount;
-          const extraRows = [{ ...row, quantity: diff }];
-
-          // 每次生成新的一批前，找到当前画布最末尾的一个元素的坐标
-          let startX = 60;
-          let startY = 60;
-
-          if (updatedSeats.length > 0) {
-            const lastSeat = updatedSeats[updatedSeats.length - 1];
-            const { width, height } = getSeatDimensions(lastSeat.pax);
-
-            startX = lastSeat.x + width + GAP;
-            startY = lastSeat.y;
-
-            // 马上在外面判断一次，如果最尾部的这个即将生成的下一个 X 大于了，则直接挪到下一排去
-            if (startX > 800) {
-              startX = 60;
-              startY = lastSeat.y + height + GAP;
-            }
-          }
-
-          // 把计算好真正起始值的 startX 和 startY 塞进去，里面也会自动帮忙断行
-          const newPieces = generateSeat(extraRows, startX, startY);
-          updatedSeats = [...updatedSeats, ...newPieces];
-        } else if (currentCount > targetCount) {
-          // 裁员逻辑
-          const toRemoveCount = currentCount - targetCount;
-          let removedSoFar = 0;
-          for (let i = updatedSeats.length - 1; i >= 0; i--) {
-            if (
-              updatedSeats[i].pax === row.pax &&
-              removedSoFar < toRemoveCount
-            ) {
-              updatedSeats.splice(i, 1);
-              removedSoFar++;
-            }
-          }
-        }
-      });
-
-      // 过滤掉不在清单里的 Pax
-      const activePaxes = rows.map((r) => r.pax);
-      updatedSeats = updatedSeats.filter((s) => activePaxes.includes(s.pax));
-
-      return updatedSeats;
-    });
-  };
+   
 
   return (
     <div className="w-full p-4 border rounded-xl border-gray-100 shadow-lg flex flex-col gap-4 items-center">
@@ -109,13 +53,13 @@ export const Menu = ({ seats, setSeats }: MenuProps) => {
       <div className="flex flex-col items-center justify-center gap-2">
         {rows.map((row, index) => (
           <div
-            key={row.id}
+            key={row.pax}
             className="flex gap-4 w-full items-center justify-center"
           >
             {/* Pax Select */}
             <div className="flex flex-col shrink-0 flex-1">
               <label
-                htmlFor={`select_pax-${row.id}`}
+                htmlFor={`select_pax-${row.pax}`}
                 className="text-[10px] font-bold text-gray-400 uppercase"
               >
                 Seat Pax
@@ -124,7 +68,7 @@ export const Menu = ({ seats, setSeats }: MenuProps) => {
                 id="select_pax"
                 value={row.pax}
                 onChange={(e) =>
-                  updateRow(index, "pax", Number(e.target.value))
+                  updateRow(row.pax, "pax", Number(e.target.value))
                 }
                 className="h-14 p-4 border border-gray-200 rounded-lg outline-none bg-zinc-50"
               >
@@ -142,7 +86,7 @@ export const Menu = ({ seats, setSeats }: MenuProps) => {
             {/* Quantity Input */}
             <div className="flex flex-col shrink-0 flex-1">
               <label
-                htmlFor={`quantity_input-${row.id}`}
+                htmlFor={`quantity_input-${row.pax}`}
                 className="text-[10px] font-bold text-gray-400 uppercase w-full"
               >
                 Quantity
@@ -153,7 +97,7 @@ export const Menu = ({ seats, setSeats }: MenuProps) => {
                 min={1}
                 value={row.quantity}
                 onChange={(e) =>
-                  updateRow(index, "quantity", e.target.valueAsNumber || 0)
+                  updateRow(row.pax, "quantity", e.target.valueAsNumber || 0)
                 }
                 className="h-14 p-4 border border-gray-200 rounded-lg outline-none w-full"
               />
@@ -177,7 +121,7 @@ export const Menu = ({ seats, setSeats }: MenuProps) => {
         <div className="flex w-full gap-2  ">
           <button
             type="button"
-            onClick={addMore}
+            onClick={addNewSeatPaxInput}
             disabled={rows.length >= paxOptions.length}
             className="border w-1/2 p-4 text-sm rounded-lg font-bold text-[#297aad] hover:text-[#66a0c4] disabled:text-gray-300"
           >
@@ -187,7 +131,7 @@ export const Menu = ({ seats, setSeats }: MenuProps) => {
             type="button"
             onClick={() => {
               setSeats([]);
-              setRows([{ id: "initial-row", pax: 2, quantity: 1 }]);
+              setRows([{ pax: 2, quantity: 1 }]);
             }}
             disabled={seats.length === 0}
             className="border w-1/2 p-4 text-sm rounded-lg font-bold text-[#297aad] hover:text-[#66a0c4] disabled:text-gray-300"
@@ -199,7 +143,7 @@ export const Menu = ({ seats, setSeats }: MenuProps) => {
         <div className="flex w-full gap-2">
           <button
             type="button"
-            onClick={UpdateSeatAmount}
+            onClick={()=> {updateLayout(rows)}}
             className="border w-1/2 p-4 bg-[#5f64aa] text-white rounded-lg hover:bg-[#777fef] ml-auto"
           >
             Update
@@ -207,7 +151,7 @@ export const Menu = ({ seats, setSeats }: MenuProps) => {
           <button
             type="button"
             onClick={() => {
-              const newSeats = generateSeat(rows);
+              const { seats: newSeats } = generateSeat(rows);
               setSeats((prev) => [...prev, ...newSeats]);
             }}
             className="border w-1/2 p-4 bg-[#5f64aa] text-white rounded-lg hover:bg-[#777fef] ml-auto"
