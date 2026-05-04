@@ -61,7 +61,7 @@ export const Menu = ({ seats, setSeats, updateLayout, setActiveTheme }: MenuProp
   const paxOptions: Pax[] = [2, 4, 6, 8, 10, 12];
   const [rows, setRows] = useState<PaxRow[]>([{ pax: 2, quantity: 1 }]);
 
-  const updateRow = (targetPax: number, field: keyof PaxRow, value: number) => {
+  const updateSeatPaxInputRow = (targetPax: number, field: keyof PaxRow, value: number) => {
     setRows((prevRows) =>
       prevRows.map((row) =>
         row.pax === targetPax ? { ...row, [field]: value } : row,
@@ -89,9 +89,9 @@ export const Menu = ({ seats, setSeats, updateLayout, setActiveTheme }: MenuProp
       <h1 className="text-center font-bold text-xl">Floor Plan Editor Menu</h1>
       <div className="border border-gray-100 w-3/4" />
 
-      <div className="flex w-full flex-wrap gap-2">
+      <div className="flex w-full flex-wrap gap-4">
         <p className="block text-center w-full font-bold">Seats Option</p>{" "}
-        {/* select pax */}
+        {/* select pax and quantity*/}
         <div className="flex flex-col items-center justify-center gap-2 w-full">
           {rows.map((row, index) => (
             <div
@@ -104,7 +104,11 @@ export const Menu = ({ seats, setSeats, updateLayout, setActiveTheme }: MenuProp
                   id="select_pax"
                   value={row.pax}
                   onChange={(e) =>
-                    updateRow(row.pax, "pax", Number(e.target.value))
+                    updateSeatPaxInputRow(
+                      row.pax,
+                      "pax",
+                      Number(e.target.value),
+                    )
                   }
                   className="h-14 p-4 border border-gray-200 rounded-lg outline-none bg-zinc-50"
                 >
@@ -128,7 +132,11 @@ export const Menu = ({ seats, setSeats, updateLayout, setActiveTheme }: MenuProp
                   min={1}
                   value={row.quantity}
                   onChange={(e) =>
-                    updateRow(row.pax, "quantity", e.target.valueAsNumber || 0)
+                    updateSeatPaxInputRow(
+                      row.pax,
+                      "quantity",
+                      e.target.valueAsNumber || 0,
+                    )
                   }
                   className="h-14 p-4 border border-gray-200 rounded-lg outline-none w-full"
                 />
@@ -147,8 +155,31 @@ export const Menu = ({ seats, setSeats, updateLayout, setActiveTheme }: MenuProp
             </div>
           ))}
         </div>
+        {/* add pax and quantity option, clear */}
+        <div className="flex w-full gap-2">
+          <button
+            type="button"
+            onClick={addNewSeatPaxInput}
+            disabled={rows.length >= paxOptions.length}
+            className="border w-1/2 p-4 text-sm rounded-lg font-bold text-[#297aad] hover:bg-[#297aad] hover:text-white disabled:text-gray-300"
+          >
+            Add SeatPax
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setSeats([]);
+              setRows([{ pax: 2, quantity: 1 }]);
+            }}
+            disabled={seats.length === 0}
+            className="border w-1/2 p-4 text-sm rounded-lg font-bold text-[#297aad] hover:bg-[#297aad] hover:text-white disabled:text-gray-300"
+          >
+            Clear
+          </button>
+        </div>
       </div>
 
+      {/* theme */}
       <div className="flex w-full flex-wrap gap-2">
         <p className="block text-center w-full font-bold">Theme</p>
         <div className="grid grid-cols-6 gap-2 p-4 w-full items-center justify-center text-white [&_button]:border [&_button]:shadow-md">
@@ -156,7 +187,7 @@ export const Menu = ({ seats, setSeats, updateLayout, setActiveTheme }: MenuProp
             <button
               key={theme}
               type="button"
-              className={`min-h-12 max-w-12 p-4 rounded-md font-bold transition-all ${
+              className={`min-h-12 max-w-12 p-4 rounded-md font-bold transition-all hover:scale-105 ${
                 theme === "WHITE" ? "text-black" : "text-white"
               }`}
               style={{
@@ -169,36 +200,12 @@ export const Menu = ({ seats, setSeats, updateLayout, setActiveTheme }: MenuProp
               }}
               onClick={() => getCurrentTheme(theme)}
             />
-           
-            
           ))}
         </div>
       </div>
 
-      {/* button */}
+      {/* save and update button */}
       <div className="flex w-full gap-1 flex-wrap my-4">
-        <div className="flex w-full gap-2  ">
-          <button
-            type="button"
-            onClick={addNewSeatPaxInput}
-            disabled={rows.length >= paxOptions.length}
-            className="border w-1/2 p-4 text-sm rounded-lg font-bold text-[#297aad] hover:text-[#66a0c4] disabled:text-gray-300"
-          >
-            Add SeatPax Option
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setSeats([]);
-              setRows([{ pax: 2, quantity: 1 }]);
-            }}
-            disabled={seats.length === 0}
-            className="border w-1/2 p-4 text-sm rounded-lg font-bold text-[#297aad] hover:text-[#66a0c4] disabled:text-gray-300"
-          >
-            Clear
-          </button>
-        </div>
-
         <div className="flex w-full gap-2">
           <button
             type="button"

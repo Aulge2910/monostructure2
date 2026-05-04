@@ -11,21 +11,28 @@ export type PaxRow = {
 };
 
 export const SEAT_CONFIG = {
-  CHAIR_WIDTH: 40,
-  CHAIR_HEIGHT: 24,
+  CHAIR_WIDTH: 25,
+  CHAIR_HEIGHT: 15,
   CHAIR_GAP: 8,
   CHAIR_PADDING: 10,
   BASE_TABLE_WIDTH: 50,
+  BASE_SEAT_HEIGHT: 85
 };
 
 export const getSeatDimensions = (pax: number) => {
-  const { CHAIR_WIDTH, CHAIR_GAP, CHAIR_PADDING, BASE_TABLE_WIDTH } =
-    SEAT_CONFIG;
+  const {
+    CHAIR_WIDTH,
+    CHAIR_GAP,
+    CHAIR_PADDING,
+    BASE_TABLE_WIDTH,
+    BASE_SEAT_HEIGHT,
+  } = SEAT_CONFIG;
   const chairsCount = pax / 2;
   const seat_width =
     BASE_TABLE_WIDTH +
     (chairsCount * CHAIR_WIDTH + (chairsCount - 1) * CHAIR_GAP + CHAIR_PADDING);
-  const seat_height = 100;
+    const seat_height = BASE_SEAT_HEIGHT;
+ 
   return { seat_width, seat_height };
 };
 
@@ -97,7 +104,7 @@ export const SeatItem = ({
         width: SEAT_CONFIG.CHAIR_WIDTH,
         height: SEAT_CONFIG.CHAIR_HEIGHT,
       }}
-      className={`   ${position === "top" ? "rounded-t-xl" : `rounded-b-xl`}`}
+      className={`   ${position === "top" ? "rounded-t-lg" : `rounded-b-lg`}`}
     />
   );
 
