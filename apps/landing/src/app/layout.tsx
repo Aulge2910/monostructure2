@@ -1,8 +1,9 @@
+import { Cursor, SmoothScrollerLayout } from "@repo/shared";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+
 import "./globals.css";
-import { Cursor, SmoothScrollerLayout } from "@repo/shared";
- 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -28,7 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Cursor/>
+        {/* <Cursor/> */}
         <SmoothScrollerLayout>{children}</SmoothScrollerLayout>
       </body>
     </html>

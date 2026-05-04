@@ -1,8 +1,9 @@
 "use client";
-import { Canvas } from "./Canvas";
-import { SeatItem, useSeats } from "./Seat";
-import { Menu, type ThemeConfig } from "./Menu";
 import { useState } from "react";
+import { Canvas } from "./Canvas";
+import { Menu, type ThemeConfig } from "./Menu";
+import { SeatItem, useSeats } from "./Seat";
+
 export const Floorplan = () => {
   const { seats, setSeats, updateLayout } = useSeats();
   const [activeTheme, setActiveTheme] = useState<ThemeConfig>({
@@ -17,7 +18,18 @@ export const Floorplan = () => {
       <div className="w-[70%] p-4">
         <Canvas activeTheme={activeTheme}>
           {seats.map((seat) => (
-            <SeatItem key={seat.id} {...seat} />
+            <SeatItem
+              key={seat.id}
+              {...seat}
+              onPositionChange={(id, newX, newY) => {
+           
+                setSeats((current) =>
+                  current.map((s) =>
+                    s.id === id ? { ...s, x: newX, y: newY } : s,
+                  ),
+                );
+              }}
+            />
           ))}
         </Canvas>
       </div>
