@@ -84,7 +84,8 @@ export const Canvas = ({ children, activeTheme }: CanvasProps) => {
         const minX = -(CANVAS_WIDTH - viewportRef.current.clientWidth);
         const minY = -(CANVAS_HEIGHT - viewportRef.current.clientHeight);
 
-        newX = Math.min(0, Math.max(newX, minX < 0 ? minX : 0));
+        newX = Math.min(0, Math.max(newX, minX < 0 ? minX : 0)); 
+        // newX = gsap.utils.clamp(minX, 0, newX); same
         newY = Math.min(0, Math.max(newY, minY < 0 ? minY : 0));
 
         gsap.set(containerRef.current, { x: newX, y: newY });

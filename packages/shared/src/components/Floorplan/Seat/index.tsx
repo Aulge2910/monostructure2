@@ -17,12 +17,12 @@ export type PaxRow = {
 };
 
 export const SEAT_CONFIG = {
-  CHAIR_WIDTH: 30,
-  CHAIR_HEIGHT: 18,
+  CHAIR_WIDTH: 35,
+  CHAIR_HEIGHT: 20,
   CHAIR_GAP: 8,
   CHAIR_PADDING: 10,
   BASE_TABLE_WIDTH: 50,
-  BASE_SEAT_HEIGHT: 85,
+  BASE_SEAT_HEIGHT: 90,
 };
 
 export const getSeatDimensions = (pax: number) => {
@@ -52,26 +52,45 @@ export interface SeatComponents extends SeatMetadata {
 
 export interface SeatItemProps extends SeatComponents {
   onPositionChange?: (id: string, newX: number, newY: number) => void;
+  onContextMenu?: (
+    e: MouseEvent | PointerEvent | React.MouseEvent,
+    id: string,
+  ) => void;
 }
 
-const statusColorMap: Record<SeatStatus, { bg: string; border: string }> = {
+const statusColorMap: Record<
+  SeatStatus,
+  { bg: string; tableBorder: string; chairBorder: string }
+> = {
   available: {
     bg: "#A9E861",
-    border: "#91cf4a",
+    tableBorder: "#88BD4B",
+    chairBorder: "#88BD4B",
   },
   occupied: {
     bg: "#FF6B6B",
-    border: "#DB4848",
+
+    tableBorder: "#BD3E3E",
+    chairBorder: "#BD3E3E",
   },
   unavailable: {
-    bg: "#DCE6F2",
-    border: "#A5AEB8",
+    bg: "#CDCCD9",
+
+    tableBorder: "#83828F",
+    chairBorder: "#83828F",
   },
   reserved: {
-    bg: "#4D98DB",
-    border: "#2771B8",
+    bg: "#6B99FF",
+
+    tableBorder: "#476ABA",
+    chairBorder: "#476ABA",
   },
 };
+//  reserved: {
+//     bg: "#168aad",
+//     border: "#2a6f97",
+//   },
+// #3D3B4F drak grey blue
 
 interface SeatMetadata {
   x: number;
@@ -92,10 +111,10 @@ export const SeatItem = ({
   seat_width,
   seat_height,
   onPositionChange,
+  onContextMenu,
 }: SeatItemProps) => {
   const seatRef = useRef<HTMLDivElement>(null);
-
-  const { CANVAS_WIDTH, CANVAS_HEIGHT } = CANVAS_CONFIG;
+  const { GRID_SIZE } = CANVAS_CONFIG;
 
   useGSAP(() => {
     if (!seatRef.current) return;
@@ -104,40 +123,33 @@ export const SeatItem = ({
     const canvas = seatRef.current?.closest(".canvas-container");
     const viewport = seatRef.current?.closest(".canvas-viewport");
 
-    let isPanningRight = false;
     let currentDrag: Draggable | null = null;
     const PAN_SPEED = 4;
 
-    let panDirX = 0; // -1 leftward 1 rightward
-    let panDirY = 0; // -1 upward 1 downward  
+    let panDirX = 0; // -1 leftward 1 rightward, 0 means no panning
+    let panDirY = 0; // -1 upward 1 downward, 0 means no panning
 
-  
     const handleTicker = () => {
-      
       if ((panDirX !== 0 || panDirY !== 0) && currentDrag && canvas) {
-         const deltaX = -panDirX * PAN_SPEED;
-         const deltaY = -panDirY * PAN_SPEED;
-        
+        const deltaX = -panDirX * PAN_SPEED;
+        const deltaY = -panDirY * PAN_SPEED;
+
         window.dispatchEvent(
           new CustomEvent("auto-pan", {
             detail: { deltaX, deltaY },
           }),
         );
 
-      
         const target = currentDrag.target;
-       const currentX = gsap.getProperty(target, "x") as number;
-       const currentY = gsap.getProperty(target, "y") as number;
+        const currentX = gsap.getProperty(target, "x") as number;
+        const currentY = gsap.getProperty(target, "y") as number;
 
-
-     
         gsap.set(target, {
           x: currentX + panDirX * PAN_SPEED,
           y: currentY + panDirY * PAN_SPEED,
         });
 
-      
-        currentDrag.update(true,true);
+        currentDrag.update(true, true);
       }
     };
     const drags = Draggable.create(seatRef.current, {
@@ -145,7 +157,21 @@ export const SeatItem = ({
       bounds: canvas,
       edgeResistance: 1,
       liveSnap: false,
-      onPress: function (this: Draggable) {
+      dragClickables: true,
+
+      onPress: function (this: Draggable, e: PointerEvent | MouseEvent) {
+        if (e.button === 2 || e.type === "contextmenu") {
+          e.preventDefault();
+          e.stopPropagation();
+
+          if (onContextMenu) {
+            onContextMenu(e, id);
+          }
+
+          // 右键不触发拖拽
+          return;
+        }
+
         window.dispatchEvent(new CustomEvent("disable-panning"));
         currentDrag = this;
         gsap.ticker.add(handleTicker);
@@ -159,38 +185,45 @@ export const SeatItem = ({
         const pointerY = this.pointerY;
         const threshold = 50; // must be less than 60-100 because origin coordinate is 60,60. bigger than 60 will auto trigger  onDrag
 
-         if (pointerX > vRect.right - threshold) {
-          panDirX = 1; 
+        if (pointerX > vRect.right - threshold) {
+          panDirX = 1;
         } else if (pointerX < vRect.left + threshold) {
-          panDirX = -1; 
+          panDirX = -1;
         } else {
-          panDirX = 0; 
+          panDirX = 0;
         }
         if (pointerY > vRect.bottom - threshold) {
           panDirY = 1;
         } else if (pointerY < vRect.top + threshold) {
-          panDirY = -1; 
+          panDirY = -1;
         } else {
           panDirY = 0;
         }
       },
 
-      onRelease: function () {
+      onRelease: () => {
         window.dispatchEvent(new CustomEvent("enable-panning"));
-        panDirX = 0; 
+        panDirX = 0;
         panDirY = 0;
- 
+
         gsap.ticker.remove(handleTicker);
         currentDrag = null;
       },
 
       onDragEnd: function () {
-        const newX = Math.round(this.x);
-        const newY = Math.round(this.y);
-        //disable panning
-        if (onPositionChange) {
-          onPositionChange(id, newX, newY);
-        }
+        const newX = Math.round(this.x / GRID_SIZE) * GRID_SIZE;
+        const newY = Math.round(this.y / GRID_SIZE) * GRID_SIZE;
+
+        gsap.to(this.target, {
+          duration: 0.2,
+          x: newX,
+          y: newY,
+          onComplete: () => {
+            if (onPositionChange) {
+              onPositionChange(id, newX, newY);
+            }
+          },
+        });
       },
       cursor: "grab",
       activeCursor: "grabbing",
@@ -223,8 +256,11 @@ export const SeatItem = ({
         backgroundColor: colors.bg,
         width: SEAT_CONFIG.CHAIR_WIDTH,
         height: SEAT_CONFIG.CHAIR_HEIGHT,
+        borderTopColor: position === "top" ? colors.chairBorder : "transparent",
+        borderBottomColor:
+          position === "bottom" ? colors.chairBorder : "transparent",
       }}
-      className={`   ${position === "top" ? "rounded-t-lg" : `rounded-b-lg`}`}
+      className={`   ${position === "top" ? "rounded-t-lg border-t-4" : `rounded-b-lg border-b-4`}`}
     />
   );
 
@@ -235,7 +271,7 @@ export const SeatItem = ({
         width: `${seat_width}px`,
         height: `${seat_height}px`,
         backgroundColor: colors.bg,
-        borderLeftColor: colors.border,
+        borderLeftColor: colors.tableBorder,
       }}
       className={`rounded-lg overflow-hidden border-l-6`}
     >
@@ -262,10 +298,18 @@ export const SeatItem = ({
   // seat ui
   return (
     // seat wrapper div // outer most part
+
+    // biome-ignore lint/a11y/noStaticElementInteractions: seat wrapper handles pointer events
     <div
       ref={seatRef}
       onPointerDown={(e) => {
         e.stopPropagation();
+      }}
+      onContextMenu={(e) => {
+        // <-- 加上这块代码
+        if (onContextMenu) {
+          onContextMenu(e, id);
+        }
       }}
       className="seat-draggable absolute flex flex-col items-center gap-1 group"
       style={{
