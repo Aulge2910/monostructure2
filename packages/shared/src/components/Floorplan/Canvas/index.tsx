@@ -34,6 +34,7 @@ export const Canvas = ({ children, activeTheme }: CanvasProps) => {
         preventDefault: true,
         dragMinimum: 0,
         ignore: ".seat-draggable",
+        wheelSpeed: -1,
         onPress: (self) => {
           if (self.target instanceof HTMLElement) {
             self.target.style.cursor = "grabbing";
@@ -45,15 +46,34 @@ export const Canvas = ({ children, activeTheme }: CanvasProps) => {
           }
         },
         onChange: (self) => {
-          if (!self.isDragging || !viewportRef.current || !containerRef.current)
-            return;
+         if (!self.isDragging && !self.event?.type.includes("wheel")) {
+           if (!viewportRef.current || !containerRef.current) return;
+           return;
+         }
+
+         if (!viewportRef.current || !containerRef.current) return;
+
 
           const x = gsap.getProperty(containerRef.current, "x") as number;
           const y = gsap.getProperty(containerRef.current, "y") as number;
 
-          let newX = x + self.deltaX;
-          let newY = y + self.deltaY;
+         let newX = x;
+         let newY = y;
 
+         if (self.isDragging) {
+           newX += self.deltaX;
+           newY += self.deltaY;
+         } else if (self.event?.type.includes("wheel")) {
+           const e = self.event as WheelEvent;
+                  if (e.shiftKey) {
+             newX -= e.deltaY;
+           } else {
+             newX -= e.deltaX;
+             newY -= e.deltaY;
+           }
+         }
+
+          
           const minX = -(
             CANVAS_CONFIG.CANVAS_WIDTH - viewportRef.current.clientWidth
           );
@@ -137,7 +157,9 @@ export const Canvas = ({ children, activeTheme }: CanvasProps) => {
       </div>
 
       <div className="absolute bottom-4 right-4 bg-white/50 px-2 py-1 rounded text-[10px] pointer-events-none text-black">
-        Bounded Canvas (max: {CANVAS_WIDTH}x{CANVAS_HEIGHT})
+        Bounded Canvas (max: {CANVAS_WIDTH}x{CANVAS_HEIGHT}) <br/>
+        Shift+WheelScroll = horizontal Panning <br/>
+        WheelScroll = Vertical Panning
       </div>
     </div>
   );
