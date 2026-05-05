@@ -108,36 +108,35 @@ export const SeatItem = ({
     let currentDrag: Draggable | null = null;
     const PAN_SPEED = 4;
 
-    let panDirX = 0; // -1 表示需要向左卷(看到左边场景)、1 表示向右、0 表示不卷
-    let panDirY = 0; // -1 表示向上卷、1 表示向下、0 表示不卷
+    let panDirX = 0; // -1 leftward 1 rightward
+    let panDirY = 0; // -1 upward 1 downward  
 
   
     const handleTicker = () => {
-      // 向左移动画布，相当于把容器往左推 (deltaX 为负)
+      
       if ((panDirX !== 0 || panDirY !== 0) && currentDrag && canvas) {
          const deltaX = -panDirX * PAN_SPEED;
          const deltaY = -panDirY * PAN_SPEED;
-        // 1. 发送事件，让 Canvas 容器向左移动
+        
         window.dispatchEvent(
           new CustomEvent("auto-pan", {
             detail: { deltaX, deltaY },
           }),
         );
 
-        // 2. 最稳妥的方案：手动把当前 Seat 元素的 x 给加回来！
-        // 不能直接修改 currentDrag.x，但是可以通过 gsap 修改它的目标 DOM
+      
         const target = currentDrag.target;
        const currentX = gsap.getProperty(target, "x") as number;
        const currentY = gsap.getProperty(target, "y") as number;
 
 
-        // 把 DOM 往回拉 PAN_SPEED 的距离
+     
         gsap.set(target, {
           x: currentX + panDirX * PAN_SPEED,
           y: currentY + panDirY * PAN_SPEED,
         });
 
-        // 3. 然后让 Draggable 读取 DOM 最新 x 值，重新同步它自己的内部逻辑状态
+      
         currentDrag.update(true,true);
       }
     };
@@ -161,16 +160,16 @@ export const SeatItem = ({
         const threshold = 50; // must be less than 60-100 because origin coordinate is 60,60. bigger than 60 will auto trigger  onDrag
 
          if (pointerX > vRect.right - threshold) {
-          panDirX = 1; // 靠近右侧，希望把画布往左推 (看到更多的右边)
+          panDirX = 1; 
         } else if (pointerX < vRect.left + threshold) {
-          panDirX = -1; // 靠近左侧，希望把画布往右推 (看到左边)
+          panDirX = -1; 
         } else {
-          panDirX = 0; // 停在中间没碰边缘
+          panDirX = 0; 
         }
         if (pointerY > vRect.bottom - threshold) {
-          panDirY = 1; // 靠近底部
+          panDirY = 1;
         } else if (pointerY < vRect.top + threshold) {
-          panDirY = -1; // 靠近顶部
+          panDirY = -1; 
         } else {
           panDirY = 0;
         }
@@ -178,8 +177,8 @@ export const SeatItem = ({
 
       onRelease: function () {
         window.dispatchEvent(new CustomEvent("enable-panning"));
-        panDirX = 0; // 👈 记得松开鼠标时归零
-        panDirY = 0; // 👈 记得松开鼠标时归零
+        panDirX = 0; 
+        panDirY = 0;
  
         gsap.ticker.remove(handleTicker);
         currentDrag = null;

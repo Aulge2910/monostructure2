@@ -84,7 +84,6 @@ export const Canvas = ({ children, activeTheme }: CanvasProps) => {
         const minX = -(CANVAS_WIDTH - viewportRef.current.clientWidth);
         const minY = -(CANVAS_HEIGHT - viewportRef.current.clientHeight);
 
-        // 严密的边界校验（防止拉过头露出黑边）
         newX = Math.min(0, Math.max(newX, minX < 0 ? minX : 0));
         newY = Math.min(0, Math.max(newY, minY < 0 ? minY : 0));
 
