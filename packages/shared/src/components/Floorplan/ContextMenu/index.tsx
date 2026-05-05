@@ -12,7 +12,6 @@ const STATUS_OPTIONS: { value: SeatStatus; label: string; color: string }[] = [
   { value: "reserved", label: "Reserved", color: "bg-[#4D98DB]" },
 ];
 
-
 export interface ContextMenuComponents {
   x: number;
   y: number;
@@ -36,22 +35,20 @@ export const ContextMenu = ({
   onChangeStatus,
 }: ContextMenuProps) => {
   const [mounted, setMounted] = useState(false);
- const [showStatusMenu, setShowStatusMenu] = useState(false);
+  const [showStatusMenu, setShowStatusMenu] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-  if (!visible) {
-    setShowStatusMenu(false);
-    return;
-  }
-
+    if (!visible) {
+      setShowStatusMenu(false);
+      return;
+    }
 
     const handleClick = (e: MouseEvent) => {
       if (e.button === 0) {
         onClose();
       }
     };
-
 
     const timer = setTimeout(() => {
       window.addEventListener("pointerdown", handleClick);
@@ -104,7 +101,6 @@ export const ContextMenu = ({
             role="none"
             className="absolute -top-2 -right-50 w-50 z-1010 pr-2 rounded-xl border"
           >
-            {/* 这个内层 div 才是真正看得见、白色的弹出框 */}
             <div className="bg-white/95 backdrop-blur-md border border-gray-200 rounded-xl shadow-xl p-2 animate-in fade-in slide-in-from-left-2 duration-150">
               {STATUS_OPTIONS.map((opt) => (
                 <button
